@@ -10,6 +10,8 @@ public class Calendar {
     private int year;
     private int month;
     private int days;
+
+    private int daysSinceStart;
     //Starts the 1 january 0 by default
     public Calendar(){
         lock = new ReentrantReadWriteLock();
@@ -17,6 +19,7 @@ public class Calendar {
         year = 0;
         month = 1;
         days = 1;
+        daysSinceStart = 1;
     }
     public Calendar(int year,int month,int days){
         lock = new ReentrantReadWriteLock();
@@ -83,7 +86,7 @@ public class Calendar {
                 leftDays = leftDays - (remainingDays + 1);
             }
         }
-
+        daysSinceStart++;
         lock.writeLock().unlock();
     }
     public void incMonth(int month){
@@ -163,5 +166,8 @@ public class Calendar {
             return result;
 
         return 0;
+    }
+    public int getDaysSinceStart(){
+        return daysSinceStart;
     }
 }

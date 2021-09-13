@@ -14,7 +14,7 @@ public final class PeopleConfig{
 	public static int PEOPLE_HEALTH_ROOF = 100;
 
     //in months
-    public static int PEOPLE_GESTATION_TIME = 1;
+    public static int PEOPLE_GESTATION_TIME = 4;
     //in years
     public static int PEOPLE_ADULT_AGE = 9;
 

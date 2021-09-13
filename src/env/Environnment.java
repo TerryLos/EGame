@@ -16,48 +16,44 @@ import logger.LoggerException;
 - Environnment in which societies are played.
 - Handles the simulation and the constants values.
 */
-public class Environnment implements Runnable{
-    private Calendar calendar;
-    private Society society;
+public class Environnment {
 
-    public Environnment(){
-        this.calendar = new Calendar();
-        this.society = new Society(calendar,"Evergreen");
-    }
-
-    @Override
-    public void run(){
+    public static void main(String[] args){
         String endState;
         try{
+            Calendar calendar = new Calendar();
+            Society society = new Society(calendar,"Simulation");
 
-            startSimulation();
-            endState = "Final state :\n"+society.toString();
-            System.out.println(endState);
-            Logger.INFO(endState);
-            Logger.INFO("---------------------End  Of  Simulation------------------");
+            /*
+                Only writes the final state if everything went ok.
+             */
+            if(!(new Environnment().startSimulation(calendar,society))){
+                endState = "Final state :\n"+society.toString();
+                System.out.println(endState);
+                Logger.INFO(endState);
+                Logger.WARN("---------------------End  Of  Simulation------------------");
+            }
             Logger.stop();
 
         }catch(LoggerException le){
             le.printStackTrace();
         }
-        
     }
     
-    private void startSimulation() throws LoggerException{
+    private boolean startSimulation(Calendar calendar,Society society) throws LoggerException{
         int i =0;
 
         if(envVariableCheckUp())
             System.exit(-1);
 
-        Logger.INFO("---------------------Starting Simulation------------------");
-        Logger.INFO("Society starting state :");
+        Logger.WARN("---------------------Starting Simulation------------------");
         Logger.INFO("\t"+society.toString());
 
         //Iteration counter before switching to the next day
         while(i<EnvConfig.ACTION_BY_DAY*EnvConfig.NBR_SIM_DAY){
             //Error or death of the society
             if(society.runSociety() == -1)
-                break;
+                return false;
 
             if(i % EnvConfig.ACTION_BY_DAY == 0 ){
                 calendar.incDays(1);
@@ -66,6 +62,7 @@ public class Environnment implements Runnable{
             i = (i + 1);
         }
 
+        return true;
     }
 
     private boolean envVariableCheckUp() throws LoggerException{

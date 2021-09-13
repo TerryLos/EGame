@@ -9,8 +9,12 @@ import market.Market;
 import people.BankAccount;
 import people.PeopleThread;
 import people.People;
+
+import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
+
+import statistics.DatabaseWriter;
 import work.JobOffers;
 import logger.Logger;
 import logger.LoggerException;
@@ -44,9 +48,19 @@ public class Society{
     }
     
     public int runSociety() throws LoggerException{
-
+        DatabaseWriter writer;
         int currentPopulation = peopleThread.getPeopleNbr();
         int postPopulation = 0;
+        try {
+            writer = new DatabaseWriter();
+        }catch (ExceptionInInitializerError e){
+            Logger.ERROR("Can't connect to the database.");
+            return -1;
+        }
+
+        /*
+            The Society pays the unemployed agent at the start of each months.
+         */
         if(time.getDay()==1){
             List<People> unemployed = peopleThread.getUnemployed();
             for(People u:unemployed){
@@ -60,27 +74,27 @@ public class Society{
         }
         int result = peopleThread.execIteration();
 
+        writer.write(time.getDaysSinceStart(),peopleThread.getPeopleNbr(),markets.get(0).getSupply(),markets.get(1).getSupply(),markets.get(2).getSupply());
+
         if(result == 1){
-
-            Logger.INFO("Society "+name+" has come to an end. No people left in it.");
-
+            Logger.WARN("Society "+name+" has come to an end. No people left in it.");
         }
 
         else if(result == 0){
-
             postPopulation = peopleThread.getPeopleNbr();
             peopleNbr += (postPopulation-currentPopulation);
 
-            if(postPopulation - currentPopulation != 0){
+            if(postPopulation - currentPopulation > 0)
+                Logger.INFO(" "+ time.toString() +" "+Integer.toString(postPopulation-currentPopulation)+" baby/ies are born !");
                     
-                if(postPopulation - currentPopulation > 0)
-                    Logger.INFO(" "+ time.toString() +" "+Integer.toString(postPopulation-currentPopulation)+" baby/ies are born !");
-                    
-                else if(postPopulation - currentPopulation < 0)
-                    Logger.INFO(" "+ time.toString() +" "+Integer.toString(currentPopulation-postPopulation)+" people have died !");
-                
+            else if(postPopulation - currentPopulation < 0)
+                Logger.INFO(" "+ time.toString() +" "+Integer.toString(currentPopulation-postPopulation)+" people have died !");
+
+            /*
+             Prints the society state each 7 days
+             */
+            if(time.getDay()%7==0)
                 Logger.INFO("\t"+ toString());
-            }
 
             return 0;
         }
