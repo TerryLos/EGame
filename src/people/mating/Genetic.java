@@ -21,11 +21,9 @@ public class Genetic {
 
         for(int i=0;i<baseGenCode.length;i++){
             if(ThreadLocalRandom.current().nextInt(PeopleConfig.PEOPLE_MUTATION_RATE) == 1){
-                System.out.println("Genetic modification appeared !" + baseGenCode[i]);
                 baseGenCode[i] += (int)(10 * ThreadLocalRandom.current().nextGaussian());
                 if(baseGenCode[i] < 0)
                     baseGenCode[i] = 0;
-                System.out.println(baseGenCode[i]);
             }
         }
         return baseGenCode;

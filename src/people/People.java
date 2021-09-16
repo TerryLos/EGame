@@ -18,8 +18,8 @@ import work.Work;
 import logger.LoggerException;
 /*
 - Written by Loslever Terry 2021-07-08 -> Ongoing
-- Key class of the project. It the future versions it should implement
-- a AI engine which will take rationnal decisions instead of random ones.
+- Key class of the project. In the future versions it should implement
+- an AI engine which will take rational decisions instead of random ones.
 */
 
 public class People implements Callable<People>{
@@ -64,6 +64,9 @@ public class People implements Callable<People>{
         this.peopleCharacteristics = peopleCharacteristics;
 
     }
+    public boolean isAdult(){
+        return (currentTime.getYear() - birthDate.getYear() >= PeopleConfig.PEOPLE_ADULT_AGE);
+    }
     public People(int id){
         this.id = id;
     }
@@ -104,10 +107,10 @@ public class People implements Callable<People>{
             charact = peopleCharacteristics.toString();
 
     	if(sex)
-    		return currentState.toString()+charact+"sexe : F\t"+account.toString()+work.toString()+possession.toString();
+    		return currentState.toString()+charact+"sex : F\t"+account.toString()+work.toString()+possession.toString();
 
     	else
-    		return currentState.toString()+charact+"sexe : M\t"+account.toString()+work.toString()+possession.toString();
+    		return currentState.toString()+charact+"sex : M\t"+account.toString()+work.toString()+possession.toString();
     }
     /*
         Function called by the thread manager.
@@ -120,7 +123,7 @@ public class People implements Callable<People>{
         int tmpIncome = 0;
         String job="Unemployed";
 
-        if(currentTime.getYear() - birthDate.getYear() >= PeopleConfig.PEOPLE_ADULT_AGE){
+        if(isAdult()){
             //currentState.setAging((currentTime.getYear() - birthDate.getYear())/PeopleConfig.PEOPLE_ADULT_AGE);
         	currentState.updateState();
             //TODO ADD AGING WHICH IS ALREADY READY IN PEOPLE STATE

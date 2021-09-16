@@ -28,7 +28,6 @@ public class Farmer extends Work{
 		if(possession.getLandSurface()>0){
 			if(workedTime>=SocietyConfig.FARMER_WORK_GATHERING){
 				foodSupply.addSupply(new Tradable(priceEstimate(),yieldEstimate(),account));
-				System.out.println("Farmer produced :"+Integer.toString(yieldEstimate())+ " for "+Integer.toString(priceEstimate()));
 				workedTime = 0;
 				
 			}
@@ -54,7 +53,7 @@ public class Farmer extends Work{
 	@Override
 	public int priceEstimate(){
 		Tradable bestOffer = foodSupply.getBestOffer();
-		int basePrice = (int)((1+ ThreadLocalRandom.current().nextGaussian())*possession.getLandPrice() + account.getAverageExpenses())/yieldEstimate();
+		int basePrice = (int)((1+ Math.abs(ThreadLocalRandom.current().nextGaussian()))*possession.getLandPrice() + account.getAverageExpenses())/yieldEstimate();
 		int lowestMarketPrice = 0;
 		if(bestOffer != null)
 			lowestMarketPrice = bestOffer.getAskedPrice();

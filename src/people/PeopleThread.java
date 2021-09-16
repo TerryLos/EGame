@@ -67,7 +67,6 @@ public class PeopleThread{
 				}
 				else if(returnedPeople.getId()==-1){
 					People toDel = peopleList.get(tmp);
-					System.out.println("Wants to remove "+Integer.toString(toDel.getId())+ " size " +peopleList.size());
 					toDel.suicide();
 					peopleList.remove(tmp);
 					boundary--;
@@ -108,13 +107,22 @@ public class PeopleThread{
 		}
 		return tmp;
 	}
+	public int getYouthNbr(){
+		int nbr = 0;
+
+		for(People people : peopleList){
+			if(!people.isAdult())
+				nbr++;
+		}
+		return nbr;
+	}
 	public String toString(){
 		People tmp;
 		String result = "";
 
-		for(int i = 0;i<peopleList.size();i++){
-			tmp = peopleList.get(i);
-			result = result + Logger.ANSI_GREEN + "\n People : "+Integer.toString(tmp.getId())+Logger.ANSI_RESET +" "+tmp.toString();
+		for (People people : peopleList) {
+			tmp = people;
+			result = result + Logger.ANSI_GREEN + "\n People : " + Integer.toString(tmp.getId()) + Logger.ANSI_RESET + " " + tmp.toString();
 		}
 
 		return result;

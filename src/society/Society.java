@@ -9,8 +9,6 @@ import market.Market;
 import people.BankAccount;
 import people.PeopleThread;
 import people.People;
-
-import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -47,16 +45,10 @@ public class Society{
         this.time = time;
     }
     
-    public int runSociety() throws LoggerException{
-        DatabaseWriter writer;
+    public int runSociety(DatabaseWriter writer,boolean write) throws LoggerException{
+
         int currentPopulation = peopleThread.getPeopleNbr();
         int postPopulation = 0;
-        try {
-            writer = new DatabaseWriter();
-        }catch (ExceptionInInitializerError e){
-            Logger.ERROR("Can't connect to the database.");
-            return -1;
-        }
 
         /*
             The Society pays the unemployed agent at the start of each months.
@@ -74,7 +66,8 @@ public class Society{
         }
         int result = peopleThread.execIteration();
 
-        writer.write(time.getDaysSinceStart(),peopleThread.getPeopleNbr(),markets.get(0).getSupply(),markets.get(1).getSupply(),markets.get(2).getSupply());
+        if(write)
+            writer.write(time.getDaysSinceStart(),peopleThread,(FoodMarket) markets.get(0),(LandMarket) markets.get(2),(HouseMarket) markets.get(1));
 
         if(result == 1){
             Logger.WARN("Society "+name+" has come to an end. No people left in it.");

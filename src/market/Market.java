@@ -10,9 +10,31 @@ public class Market{
 
 	protected PriorityQueue<Tradable> marketOffers;
 
+	/*
+		Meta-data computed in other functions to spare time.
+	 */
+	private int totalVolume;
+
 	public Market(){
 		marketOffers = new PriorityQueue<Tradable>();
+		totalVolume = -1;
 	}
+
+	synchronized public int getTotalSupply(){
+		int totalVolume = 0;
+		if(this.totalVolume != -1)
+			return  this.totalVolume;
+		Iterator<Tradable> item = marketOffers.iterator();
+		Tradable tmp;
+
+		while (item.hasNext()){
+			tmp = item.next();
+			totalVolume += tmp.getVolume();
+		}
+		this.totalVolume = totalVolume;
+		return totalVolume;
+	}
+
 	synchronized public int getSupply(){ 
 		Tradable tmp = marketOffers.peek();
 
@@ -23,7 +45,7 @@ public class Market{
 	}
 	synchronized public void addSupply(Tradable offer){
 		//Tries to regroup already existing offers.
-		Iterator offerIt = marketOffers.iterator();
+		Iterator<Tradable> offerIt = marketOffers.iterator();
 		Tradable tmp;
 		boolean found = false;
 
@@ -41,6 +63,24 @@ public class Market{
     synchronized public Tradable getBestOffer(){
     	return marketOffers.peek();
     }
+	/*
+		Mean item price returns the mean price of the item. The mean isn't done on the number of offers but on the volume instead.
+	 */
+	synchronized public float meanItemPrice(){
+		int totalVolume = 0;
+		float meanPrice = 0;
+
+		Iterator<Tradable> item = marketOffers.iterator();
+		Tradable tmp;
+		while (item.hasNext()){
+			tmp = item.next();
+			totalVolume += tmp.getVolume();
+			meanPrice += tmp.getAskedPrice()*tmp.getVolume();
+		}
+		this.totalVolume = totalVolume;
+
+		return meanPrice/totalVolume;
+	}
     synchronized public List<Tradable> peekSupply(int amount,int maxBudget){
     	Tradable tmp = marketOffers.peek();
 		int remainingAmount = amount;
@@ -58,8 +98,8 @@ public class Market{
 			if(tmp.getVolume() - remainingAmount >= 0 && remainingAmount*tmp.getAskedPrice()<=remainingBudget){
 		    	sellerList.add(new Tradable(tmp.getAskedPrice(),remainingAmount,tmp.getReceiverAccount()));
 		    	tmp.setVolume(tmp.getVolume()-remainingAmount);
+				remainingBudget -= remainingAmount*tmp.getAskedPrice();
 		    	remainingAmount = 0;
-		    	remainingBudget -= remainingAmount*tmp.getAskedPrice();
 			}
 
 			else if(tmp.getVolume() - remainingAmount < 0 && tmp.getVolume()*tmp.getAskedPrice()<=remainingBudget){
@@ -92,8 +132,8 @@ public class Market{
 			if(tmp.getVolume() - remainingAmount >= 0 && remainingAmount*tmp.getAskedPrice()<=remainingBudget){
 		    	sellerList.add(new Tradable(tmp.getAskedPrice(),remainingAmount,tmp.getReceiverAccount()));
 		    	tmp.setVolume(tmp.getVolume()-remainingAmount);
+				remainingBudget -= remainingAmount*tmp.getAskedPrice();
 		    	remainingAmount = 0;
-		    	remainingBudget -= remainingAmount*tmp.getAskedPrice();
 			}
 
 			else if(tmp.getVolume() - remainingAmount < 0 && tmp.getVolume()*tmp.getAskedPrice()<=remainingBudget){

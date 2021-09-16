@@ -33,8 +33,8 @@ public class FoodMarket extends Market{
 			else if(tmp.getVolume() - remainingAmount > 0 && remainingAmount*tmp.getAskedPrice()<=remainingBudget){
 		    	sellerList.add(new Tradable(tmp.getAskedPrice(),remainingAmount,tmp.getReceiverAccount()));
 		    	tmp.setVolume(tmp.getVolume()-remainingAmount);
+				remainingBudget -= remainingAmount*tmp.getAskedPrice();
 		    	remainingAmount = 0;
-		    	remainingBudget -= remainingAmount*tmp.getAskedPrice();
 			}
 
 			else if(tmp.getVolume() - remainingAmount < 0 && tmp.getVolume()*tmp.getAskedPrice()<=remainingBudget){
@@ -74,8 +74,8 @@ public class FoodMarket extends Market{
 			else if(tmp.getVolume() - remainingAmount > 0 && remainingAmount*tmp.getAskedPrice()<=remainingBudget){
 		    	sellerList.add(new Tradable(tmp.getAskedPrice(),remainingAmount,tmp.getReceiverAccount()));
 		    	tmp.setVolume(tmp.getVolume()-remainingAmount);
+				remainingBudget -= remainingAmount*tmp.getAskedPrice();
 		    	remainingAmount = 0;
-		    	remainingBudget -= remainingAmount*tmp.getAskedPrice();
 			}
 
 			else if(tmp.getVolume() - remainingAmount < 0 && tmp.getVolume()*tmp.getAskedPrice()<=remainingBudget){
@@ -95,7 +95,7 @@ public class FoodMarket extends Market{
 		return sellerList;
 	}
 	synchronized public String toString(){
-		Iterator it = marketOffers.iterator();
+		Iterator<Tradable> it = marketOffers.iterator();
 		String tmp = "";
 		while(it.hasNext())
 			tmp += it.next().toString()+"\n";

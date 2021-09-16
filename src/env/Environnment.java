@@ -10,6 +10,7 @@ import society.Society;
 import calendar.Calendar;
 import logger.Logger;
 import logger.LoggerException;
+import statistics.DatabaseWriter;
 
 /*
 - Written by Loslever Terry 2021-07-08 -> On going
@@ -42,7 +43,8 @@ public class Environnment {
     
     private boolean startSimulation(Calendar calendar,Society society) throws LoggerException{
         int i =0;
-
+        boolean writeRight = true;
+        DatabaseWriter dbWriter = new DatabaseWriter();
         if(envVariableCheckUp())
             System.exit(-1);
 
@@ -52,16 +54,21 @@ public class Environnment {
         //Iteration counter before switching to the next day
         while(i<EnvConfig.ACTION_BY_DAY*EnvConfig.NBR_SIM_DAY){
             //Error or death of the society
-            if(society.runSociety() == -1)
+            if(society.runSociety(dbWriter,writeRight) == -1)
                 return false;
+
+            writeRight = false;
 
             if(i % EnvConfig.ACTION_BY_DAY == 0 ){
                 calendar.incDays(1);
+                writeRight = true;
             }
 
             i = (i + 1);
         }
-
+        if(dbWriter.isConnected())
+            dbWriter.close();
+        Logger.WARN("---------------------End of Simulation------------------");
         return true;
     }
 
