@@ -1,11 +1,9 @@
 package society;
 
+import config.PeopleConfig;
 import config.SocietyConfig;
 import calendar.Calendar;
-import market.FoodMarket;
-import market.HouseMarket;
-import market.LandMarket;
-import market.Market;
+import market.*;
 import people.BankAccount;
 import people.PeopleThread;
 import people.People;
@@ -31,18 +29,23 @@ public class Society{
     private JobOffers jobOffers;
     private int peopleNbr;
     private Calendar time;
+    private Calendar taxTime;
 
     public Society(Calendar time,String name){
         this.name = name;
+        this.time = time;
+        //Sets the date to the adult time for the first ppl of the society
         this.societyAccount = new BankAccount(0,-1);
         this.markets = new ArrayList<Market>();
-        this.markets.add(new FoodMarket(SocietyConfig.INIT_FOOD_PRICE,SocietyConfig.INIT_FOOD_SUPPLY,societyAccount));
-        this.markets.add(new HouseMarket(SocietyConfig.INIT_HOUSE_SUPPLY,SocietyConfig.INIT_HOUSE_PRICE,societyAccount));
-        this.markets.add(new LandMarket(SocietyConfig.INIT_LAND_PRICE,SocietyConfig.INIT_LAND_SURFACE,societyAccount));
-        this.jobOffers = new JobOffers((FoodMarket)markets.get(0),(HouseMarket)markets.get(1));
+        this.markets.add(new FoodMarket(societyAccount,SocietyConfig.INIT_FOOD_PRICE,SocietyConfig.INIT_FOOD_SUPPLY,societyAccount));
+        this.markets.add(new HouseMarket(societyAccount,SocietyConfig.INIT_HOUSE_PRICE,SocietyConfig.INIT_HOUSE_SUPPLY,societyAccount));
+        this.markets.add(new LandMarket(societyAccount,SocietyConfig.INIT_LAND_PRICE,SocietyConfig.INIT_LAND_SURFACE,societyAccount));
+        this.markets.add(new WoodMarket(societyAccount));
+        this.jobOffers = new JobOffers((FoodMarket)markets.get(0),(HouseMarket)markets.get(1),(WoodMarket)markets.get(3),time);
         this.peopleThread = new PeopleThread(time,markets,jobOffers,societyAccount);
         this.peopleNbr = SocietyConfig.PEOPLE_NBR;
-        this.time = time;
+        this.time.incYears(PeopleConfig.PEOPLE_ADULT_AGE);
+        this.taxTime = time.copy();
     }
     
     public int runSociety(DatabaseWriter writer,boolean write) throws LoggerException{
@@ -56,18 +59,23 @@ public class Society{
         if(time.getDay()==1){
             List<People> unemployed = peopleThread.getUnemployed();
             for(People u:unemployed){
-                u.getBankAccount().addMoney(SocietyConfig.BASE_INCOME_UNEMPLOYED);
-
-                if(societyAccount.getBankAccount()<SocietyConfig.BASE_INCOME_UNEMPLOYED)
-                    societyAccount.addMoney(SocietyConfig.BASE_INCOME_UNEMPLOYED);
-                societyAccount.withdrawMoney(SocietyConfig.BASE_INCOME_UNEMPLOYED);
-                
+                societyAccount.withdrawMoneyDebt(SocietyConfig.BASE_INCOME_UNEMPLOYED);
+                u.getBankAccount().addMoney(SocietyConfig.BASE_INCOME_UNEMPLOYED,"Unemployed");
+            }
+        }
+        if(time.getYear()-taxTime.getYear()==1){
+            taxTime = time.copy();
+            List<People> people = peopleThread.getPeopleList();
+            for(People p: people){
+                societyAccount.addMoney(SocietyConfig.YEAR_TAX,"Tax");
+                p.getBankAccount().withdrawMoneyDebt(SocietyConfig.YEAR_TAX);
             }
         }
         int result = peopleThread.execIteration();
 
-        if(write)
-            writer.write(time.getDaysSinceStart(),peopleThread,(FoodMarket) markets.get(0),(LandMarket) markets.get(2),(HouseMarket) markets.get(1));
+        if(write || result==1)
+            writer.write(result==1,time.getDaysSinceStart(),peopleThread,(FoodMarket) markets.get(0),(LandMarket) markets.get(2),(HouseMarket) markets.get(1),
+                    (WoodMarket) markets.get(3),jobOffers,peopleThread,societyAccount.getBankAccount());
 
         if(result == 1){
             Logger.WARN("Society "+name+" has come to an end. No people left in it.");
@@ -87,7 +95,9 @@ public class Society{
              Prints the society state each 7 days
              */
             if(time.getDay()%7==0)
-                Logger.INFO("\t"+ toString());
+                Logger.INFO("Date : "+time.getMonth()+","+time.getDay()+"\n"+ toString());
+
+
 
             return 0;
         }
@@ -105,6 +115,6 @@ public class Society{
 
     public String toString(){
         return "-----------------------------------------------------------------\n"+time.toString()+"\n"+markets.get(0).toString()+"\n"+
-        markets.get(2).toString()+societyAccount.toString()+"\t"+" People Nbr: "+Integer.toString(peopleNbr)+"\n"+peopleThread.toString();
+        markets.get(2).toString()+markets.get(1).toString()+"\n"+societyAccount.toString()+"\t"+" People Nbr: "+Integer.toString(peopleNbr)+"\n"+peopleThread.toString();
     }
 }

@@ -4,13 +4,15 @@ import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.List;
 import java.util.ArrayList;
+
+import config.SocietyConfig;
 import people.BankAccount;
 
 public class FoodMarket extends Market{
 
 	
-	public FoodMarket(int price,int volume,BankAccount owner){
-		super();
+	public FoodMarket(BankAccount state,float price,int volume,BankAccount owner){
+		super(state);
 		marketOffers.add(new Tradable(price,volume,owner));
 	}
 	@Override
@@ -20,27 +22,28 @@ public class FoodMarket extends Market{
 		int remainingBudget = maxBudget;
 		List<Tradable> sellerList = new ArrayList<>();
 		PriorityQueue<Tradable> toRestore = Tradable.cloneQueue(marketOffers);
+		float VATPrice = 0;
 
 		while(remainingAmount > 0 && remainingBudget >0 && tmp!=null){
-			
-			if(tmp.getVolume()- remainingAmount >= 0 && remainingAmount*tmp.getAskedPrice() >= remainingBudget){
-				sellerList.add(new Tradable(tmp.getAskedPrice(),(int)remainingBudget/tmp.getAskedPrice(),tmp.getReceiverAccount()));
-				tmp.setVolume(tmp.getVolume()-(int)remainingBudget/tmp.getAskedPrice());
-				remainingAmount -= (int)remainingBudget/tmp.getAskedPrice();
+			VATPrice = (1+ SocietyConfig.VAT/100)*tmp.getAskedPrice();
+			if(tmp.getVolume()- remainingAmount >= 0 && remainingAmount*VATPrice >= remainingBudget){
+				sellerList.add(new Tradable(VATPrice,(int)(remainingBudget/VATPrice),tmp.getReceiverAccount()));
+				tmp.setVolume(tmp.getVolume()-(int)(remainingBudget/VATPrice));
+				remainingAmount -= (int)remainingBudget/VATPrice;
 				remainingBudget = 0;
 			}
 
-			else if(tmp.getVolume() - remainingAmount > 0 && remainingAmount*tmp.getAskedPrice()<=remainingBudget){
-		    	sellerList.add(new Tradable(tmp.getAskedPrice(),remainingAmount,tmp.getReceiverAccount()));
+			else if(tmp.getVolume() - remainingAmount > 0 && remainingAmount*VATPrice<=remainingBudget){
+		    	sellerList.add(new Tradable(VATPrice,remainingAmount,tmp.getReceiverAccount()));
 		    	tmp.setVolume(tmp.getVolume()-remainingAmount);
-				remainingBudget -= remainingAmount*tmp.getAskedPrice();
+				remainingBudget -= remainingAmount*VATPrice;
 		    	remainingAmount = 0;
 			}
 
-			else if(tmp.getVolume() - remainingAmount < 0 && tmp.getVolume()*tmp.getAskedPrice()<=remainingBudget){
-				sellerList.add(new Tradable(tmp.getAskedPrice(),tmp.getVolume(),tmp.getReceiverAccount()));
+			else if(tmp.getVolume() - remainingAmount < 0 && tmp.getVolume()*VATPrice<=remainingBudget){
+				sellerList.add(new Tradable(VATPrice,tmp.getVolume(),tmp.getReceiverAccount()));
 				remainingAmount -= tmp.getVolume();
-				remainingBudget -= (tmp.getVolume()*tmp.getAskedPrice());
+				remainingBudget -= (tmp.getVolume()*VATPrice);
 				tmp.setVolume(0);
 			}
 			//if we don't enter in any of the following elements. Avoid infinite loop
@@ -60,28 +63,32 @@ public class FoodMarket extends Market{
 		Tradable tmp = marketOffers.peek();
 		int remainingAmount = amount;
 		int remainingBudget = maxBudget;
+		float VATPrice = 0;
 		List<Tradable> sellerList = new ArrayList<>();
 
 		while(remainingAmount > 0 && remainingBudget >0 && tmp!=null){
-
-			if(tmp.getVolume()- remainingAmount >= 0 && remainingAmount*tmp.getAskedPrice() >= remainingBudget){
-				sellerList.add(new Tradable(tmp.getAskedPrice(),(int)remainingBudget/tmp.getAskedPrice(),tmp.getReceiverAccount()));
-				tmp.setVolume(tmp.getVolume()-remainingBudget/tmp.getAskedPrice());
-				remainingAmount -= (int)remainingBudget/tmp.getAskedPrice();
+			VATPrice = (1+ SocietyConfig.VAT/100)*tmp.getAskedPrice();
+			if(tmp.getVolume()- remainingAmount >= 0 && remainingAmount*VATPrice >= remainingBudget){
+				sellerList.add(new Tradable(tmp.getAskedPrice(),(int)(remainingBudget/VATPrice),tmp.getReceiverAccount()));
+				sellerList.add(new Tradable((VATPrice-tmp.getAskedPrice())*(int)(remainingBudget/VATPrice),0,state));
+				tmp.setVolume(tmp.getVolume()- (int)(remainingBudget/VATPrice));
+				remainingAmount -= (int)remainingBudget/VATPrice;
 				remainingBudget = 0;
 			}
 
-			else if(tmp.getVolume() - remainingAmount > 0 && remainingAmount*tmp.getAskedPrice()<=remainingBudget){
+			else if(tmp.getVolume() - remainingAmount > 0 && remainingAmount*VATPrice<=remainingBudget){
 		    	sellerList.add(new Tradable(tmp.getAskedPrice(),remainingAmount,tmp.getReceiverAccount()));
+				sellerList.add(new Tradable((VATPrice-tmp.getAskedPrice())*remainingAmount,0,state));
 		    	tmp.setVolume(tmp.getVolume()-remainingAmount);
-				remainingBudget -= remainingAmount*tmp.getAskedPrice();
+				remainingBudget -= remainingAmount*VATPrice;
 		    	remainingAmount = 0;
 			}
 
-			else if(tmp.getVolume() - remainingAmount < 0 && tmp.getVolume()*tmp.getAskedPrice()<=remainingBudget){
+			else if(tmp.getVolume() - remainingAmount < 0 && tmp.getVolume()*VATPrice<=remainingBudget){
 				sellerList.add(new Tradable(tmp.getAskedPrice(),tmp.getVolume(),tmp.getReceiverAccount()));
+				sellerList.add(new Tradable((VATPrice -tmp.getAskedPrice())*tmp.getVolume(),0,state));
 				remainingAmount -= tmp.getVolume();
-				remainingBudget -= (tmp.getVolume()*tmp.getAskedPrice());
+				remainingBudget -= (tmp.getVolume()*VATPrice);
 				tmp.setVolume(0);
 			}
 			//if we don't enter in any of the following elements. Avoid infinite loop

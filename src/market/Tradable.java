@@ -1,27 +1,44 @@
 package market;
 
 import java.lang.Comparable;
+
+import logger.Logger;
+import logger.LoggerException;
 import people.BankAccount;
 import java.util.PriorityQueue;
 
 public class Tradable implements Comparable<Tradable>{
 
-	private int askedPrice;
+	private float askedPrice;
 	private int volume;
 	private BankAccount receiverAccount;
 
-	public Tradable(int askedPrice,int volume,BankAccount receiverAccount){
-		this.askedPrice = askedPrice;
-		this.volume = volume;
-		this.receiverAccount = receiverAccount;
+	public Tradable(float askedPrice,int volume,BankAccount receiverAccount){
+		if(askedPrice >= 0.0F || volume >=0){
+			this.askedPrice = askedPrice;
+			this.volume = volume;
+			this.receiverAccount = receiverAccount;
+		}
+		else{
+			try{
+				Logger.WARN("[Tradable] - can't set negative value in tradable :"+askedPrice+ " "+volume+"\n");
+			}
+			catch(LoggerException le){
+				System.err.println("Couldn't write into the logger.");
+			}
+		}
+
 	}
 	public BankAccount getReceiverAccount(){
 		return receiverAccount;
 	}
+	public void setReceiverAccount(BankAccount receiverAccount){
+		this.receiverAccount = receiverAccount;
+	}
 	public int getVolume(){
 		return volume;
 	}
-	public int getAskedPrice(){
+	public float getAskedPrice(){
 		return askedPrice;
 	}
 	public void setVolume(int volume){
@@ -40,7 +57,7 @@ public class Tradable implements Comparable<Tradable>{
 	}
 	@Override
 	public String toString(){
-		return " Price :"+Integer.toString(askedPrice)+" volume :"+Integer.toString(volume)+
+		return " Price :"+Float.toString(askedPrice)+" volume :"+Integer.toString(volume)+
 			" Owner :"+Integer.toString(receiverAccount.getOwner());
 	}
 	@Override

@@ -1,25 +1,46 @@
 package market;
 
-import java.util.PriorityQueue;
-import java.util.List;
 import java.util.Iterator;
-import java.util.ArrayList;
+
+import config.SocietyConfig;
 import people.BankAccount;
-//Todo create an uper class called market from which it gets the main methods.
+
 public class HouseMarket extends Market{
 
-	
-	public HouseMarket(int price,int volume,BankAccount owner){
-		super();
-		marketOffers.add(new Tradable(price,volume,owner));
+	int houseLand;
+
+	public HouseMarket(BankAccount state,float price,int volume,BankAccount owner){
+		super(state);
+		houseLand = volume*SocietyConfig.BUILDER_LAND_QTITY;
+		for(int i =0;i < volume;i++)
+			marketOffers.add(new Tradable(price, SocietyConfig.BUILDER_LAND_QTITY,owner));
 	}
-	//TODO
+	@Override
+	synchronized public boolean takeBestOffer(Tradable house){
+		int tmp = marketOffers.size();
+		if(super.takeBestOffer(house)){
+			houseLand -= house.getVolume();
+			//System.out.println("del " + tmp + " " +marketOffers.size());
+			return true;
+		}
+		return false;
+	}
+	@Override
+	synchronized public void addSupply(Tradable house){
+		int tmp = marketOffers.size();
+		marketOffers.add(house);
+		houseLand += house.getVolume();
+		//System.out.println("add " + tmp + " " +marketOffers.size());
+	}
+	synchronized public int getHouseLand(){
+		return houseLand;
+	}
 	synchronized public String toString(){
 		Iterator it = marketOffers.iterator();
 		String tmp = "";
 		while(it.hasNext())
 			tmp += it.next().toString()+"\n";
 
-		return "Current LandMarket state : \n" + tmp;
+		return "Current HouseMarket state : \n" + tmp;
 	}
 }

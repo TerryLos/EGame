@@ -61,9 +61,11 @@ public class PeopleState{
         if(hungryness <=0)
             health = health - threadLocalRandom.nextInt(((int)-hungryness/10)*PeopleConfig.PEOPLE_DYING_RATE+1);
 
-    	//TODO : TMP solution to consider aging
-        if(aging != 0)
-		  health = health - threadLocalRandom.nextInt(aging*(PeopleConfig.PEOPLE_DYING_RATE+1));
+        if(aging != 0){
+            int tmp = threadLocalRandom.nextInt(aging*(PeopleConfig.PEOPLE_DYING_RATE+1));
+            health = health - tmp;
+        }
+
 
     }
     public int eat(int value){
@@ -133,9 +135,10 @@ public class PeopleState{
 					
 	}
     public void hadSex(boolean sex,Calendar currentTime){
+        int nbr = threadLocalRandom.nextInt(PeopleConfig.PEOPLE_FERTILITY);
     	libido = 0;
-    	
-    	if(sex && pregnant == false){
+
+    	if(sex && !pregnant && nbr != 1){
 			pregnant = true;
 			pregnantDate = currentTime.copy();
 		}
@@ -155,12 +158,8 @@ public class PeopleState{
 		
 	}
 	public boolean isDead(){
-	
-		if(health <= 0)
-			return true;
-			
-		return false;
-	}
+        return health <= 0;
+    }
     public PeopleState copy(){
         return new PeopleState(threadLocalRandom,hungryness,
             sleepyness,libido,health,pregnant,pregnantDate);

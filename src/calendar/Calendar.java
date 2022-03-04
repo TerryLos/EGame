@@ -153,11 +153,8 @@ public class Calendar {
                 tmp.incYears(delay);
                 break;
         }
-        if(toCompare.getYear()>tmp.getYear() || (toCompare.getYear()==tmp.getYear() && toCompare.getMonth()>tmp.getMonth()) ||
-                (toCompare.getYear()==tmp.getYear() && toCompare.getMonth()==tmp.getMonth() && toCompare.getDay()>=tmp.getDay()))
-            return true;
-
-        return false;
+        return toCompare.getYear() > tmp.getYear() || (toCompare.getYear() == tmp.getYear() && toCompare.getMonth() > tmp.getMonth()) ||
+                (toCompare.getYear() == tmp.getYear() && toCompare.getMonth() == tmp.getMonth() && toCompare.getDay() >= tmp.getDay());
     }
     public int timeElapsedMonth(Calendar toCompare){
         int result = (year-toCompare.getYear())*12+(month-toCompare.getMonth());

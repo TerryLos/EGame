@@ -1,32 +1,36 @@
 package people;
 
-import java.util.List;
-import java.util.LinkedList;
+
+import config.SocietyConfig;
 
 public class BankAccount{
 
 	private BankAccount stateAccount;
-	private LinkedList<Integer> spentMoney;
-	private LinkedList<Integer> receivedMoney;
-	private int bankAccount;
+	private float spentMoney;
+	private float receivedMoneyFarmer;
+	private float receivedMoneyBuilder;
+	private float receivedMoneyWC;
+	private float receivedMoney;
+	private float bankAccount;
 	private int owner;
 
 	public BankAccount(int bankAccount,int owner){
 		this.bankAccount = bankAccount;
 		this.owner = owner;
-		this.spentMoney = new LinkedList<Integer>();
-		this.receivedMoney = new LinkedList<Integer>();
-		
-		for(int i = 0 ; i<3 ; i++){
-			spentMoney.addFirst(0);
-			receivedMoney.addFirst(0);
-		}
+		this.spentMoney = 0;
+		this.receivedMoney = 0;
+		this.receivedMoneyFarmer = 0;
+		this.receivedMoneyBuilder = 0;
+		this.receivedMoneyWC = 0;
 	}
-	public BankAccount(int bankAccount,int owner,LinkedList<Integer> spentMoney,LinkedList<Integer> receivedMoney){
+	public BankAccount(float bankAccount,int owner,float spentMoney,float receivedMoney,float receivedMoneyFarmer,float receivedMoneyBuilder,float receivedMoneyWC){
 		this.bankAccount = bankAccount;
 		this.owner = owner;
 		this.spentMoney = spentMoney;
 		this.receivedMoney = receivedMoney;
+		this.receivedMoneyFarmer = receivedMoneyFarmer;
+		this.receivedMoneyBuilder = receivedMoneyBuilder;
+		this.receivedMoneyWC = receivedMoneyWC;
 	}
 	public void setStateAccount(BankAccount account){
 		stateAccount = account;
@@ -35,61 +39,92 @@ public class BankAccount{
 		return stateAccount;
 	}
 	public synchronized int getBankAccount(){
-		return bankAccount;
+		return (int)bankAccount;
 	}
 	public int getOwner(){
 		return owner;
 	}
-	public synchronized void addMoney(int amount){
+	public synchronized void addMoney(float amount,String source){
 		bankAccount += amount;
-		receivedMoney.set(0,receivedMoney.getFirst() + amount);
+		receivedMoney += 0;
+		if(SocietyConfig.AVAILABLE_JOBS_DIC.get(source) == null)
+			return;
+		switch(SocietyConfig.AVAILABLE_JOBS_DIC.get(source)){
+			default:
+				break;
+			case 1:
+				this.receivedMoneyFarmer += amount;
+				break;
+			case 2:
+				this.receivedMoneyBuilder += amount;
+				break;
+			case 3:
+				this.receivedMoneyWC += amount;
+				break;
+		}
 	}
-	public synchronized boolean withdrawMoney(int amount){
+	public synchronized boolean withdrawMoney(float amount){
 		if(amount > bankAccount)
 			return false;
 
 		bankAccount -= amount;
-		spentMoney.set(0,spentMoney.getFirst() + amount);
+		spentMoney += amount;
 
 		return true;
 	}
-
+	public synchronized void withdrawMoneyDebt(float amount){
+		bankAccount -= amount;
+		spentMoney += amount;
+	}
 	public synchronized String toString(){
-		return "Bank account : "+Integer.toString(bankAccount)+"\n";
+		return "Bank account : "+Float.toString(bankAccount)+"\n";
 	}
 	public synchronized BankAccount copy(){
-		return new BankAccount(bankAccount,owner,new LinkedList<Integer>(spentMoney),new LinkedList<Integer>(receivedMoney));
+		return new BankAccount(bankAccount,owner,spentMoney,receivedMoney,receivedMoneyFarmer,receivedMoneyBuilder,receivedMoneyWC);
 	}
 	public synchronized void resume(BankAccount money){
 		bankAccount = money.getBankAccount();
 		owner = money.getOwner();
 		spentMoney = money.getSpentMoney();
-		receivedMoney = money.getReceivedMoney();
+		receivedMoneyFarmer = money.getReceivedMoneyFarmer();
+		receivedMoneyBuilder = money.getReceivedMoneyBuilder();
+		receivedMoneyWC = money.getReceivedMoneyWC();
 	}
-	public synchronized LinkedList<Integer> getSpentMoney(){
-		return spentMoney;
+	public synchronized int getSpentMoney(){
+		return (int)spentMoney;
 	}
-	public synchronized LinkedList<Integer> getReceivedMoney(){
-		return receivedMoney;
+	public synchronized int getReceivedMoneyFarmer(){
+		return (int)receivedMoneyFarmer;
 	}
+	public synchronized int getReceivedMoneyWC(){
+		return (int)receivedMoneyWC;
+	}
+	public synchronized int getReceivedMoneyBuilder(){
+		return (int)receivedMoneyBuilder;
+	}
+	public synchronized int getReceivedMoney(String source){
+		switch(SocietyConfig.AVAILABLE_JOBS_DIC.get(source)){
+			case -1:
+			case 0:
+				return (int) (receivedMoney-receivedMoneyFarmer-receivedMoneyWC-receivedMoneyBuilder);
+			case 1:
+				return (int) receivedMoneyFarmer;
+			case 2:
+				return (int) receivedMoneyBuilder;
+			case 3:
+				return (int) receivedMoneyWC;
+		}
+		return  0;
+	}
+	public synchronized void setOwner(int id) {owner = id;}
 	public synchronized void resetMoneyHistoric(){
-		spentMoney.addFirst(0);
-		spentMoney.pollLast();
-		receivedMoney.addFirst(0);
-		receivedMoney.pollLast();
+		spentMoney = 0;
+		receivedMoneyFarmer = 0;
+		receivedMoneyWC = 0;
+		receivedMoneyBuilder = 0;
+		receivedMoney = 0;
 	}
-	public synchronized int getAverageIncome(){
-		int tmp = 0;
-		for(int i:receivedMoney)
-			tmp += i;
-
-		return (int)tmp/receivedMoney.size();
-	}
-	public synchronized int getAverageExpenses(){
-		int tmp = 0;
-		for(int i:spentMoney)
-			tmp += i;
-
-		return (int)tmp/spentMoney.size();
+	public synchronized int monthBalance(){
+		return (int)(receivedMoney-spentMoney);
 	}
 }

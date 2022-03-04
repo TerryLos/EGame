@@ -24,6 +24,7 @@ public class PeopleThread{
 	private ArrayList<People> peopleList;
 	final private MatingArea sexPartnerWaiting = new MatingArea();
 	private List<Market> markets;
+	private List<Integer> landByWork;
 	private JobOffers jobOffers;
 
 	public PeopleThread(Calendar calendar,List<Market> markets,JobOffers jobOffers,BankAccount stateAccount){
@@ -33,37 +34,43 @@ public class PeopleThread{
 		this.peopleList = new ArrayList();
 		this.markets = markets;
 		this.jobOffers = jobOffers;
+		this.landByWork = new ArrayList<>();
+		//Add all except no work
+		for(int i=0;i<SocietyConfig.AVAILABLE_JOBS_DIC.size()-1;i++)
+			landByWork.add(0);
 		this.lastId = 0;
 		//Creates the list of ppl
 
 		for(int i =0;i<SocietyConfig.PEOPLE_NBR;i++){
 			peopleList.add(new People(i,calendar,markets,sexPartnerWaiting,jobOffers,new PeopleCharacteristics(ThreadLocalRandom.current().nextInt(101),
 					ThreadLocalRandom.current().nextInt(101),ThreadLocalRandom.current().nextInt(101),ThreadLocalRandom.current().nextInt(101),
-					ThreadLocalRandom.current().nextInt(101),ThreadLocalRandom.current().nextInt(101),ThreadLocalRandom.current().nextInt(101))));
+					ThreadLocalRandom.current().nextInt(101),ThreadLocalRandom.current().nextInt(101),ThreadLocalRandom.current().nextInt(101),
+					ThreadLocalRandom.current().nextInt(1,11),ThreadLocalRandom.current().nextInt(1001))));
 			peopleList.get(i).setStateAccount(stateAccount);
 			lastId = i;
 		}
-		//Sets the date to the adult time for the first ppl of the society
-		calendar.incYears(PeopleConfig.PEOPLE_ADULT_AGE);
-
 	}
 
 	public int execIteration() throws LoggerException{
 		List<Future<People>> result;
-		Calendar time = peopleList.get(0).getTime();
-		People returnedPeople = null;
+		People returnedPeople;
 		int boundary = 0;
-
+		People currentPeople;
+		int pos=0;
+		resetLandByWork();
 		try{
 
 			result = executorService.invokeAll(peopleList);
 			boundary = result.size();
-			for(int tmp=0;tmp<boundary;tmp++){
 
+			for(int tmp=0;tmp<boundary;tmp++){
+				currentPeople = peopleList.get(tmp);
 				returnedPeople = result.get(tmp).get();
 
 				if(returnedPeople == null){
-					continue;
+					pos = SocietyConfig.AVAILABLE_JOBS_DIC.get(currentPeople.getWork().jobString());
+					if(pos != -1)
+						landByWork.set(pos,currentPeople.getPeoplePossessions().getLandSurface()+landByWork.get(pos));
 				}
 				else if(returnedPeople.getId()==-1){
 					People toDel = peopleList.get(tmp);
@@ -107,6 +114,14 @@ public class PeopleThread{
 		}
 		return tmp;
 	}
+	public List<Integer> getLandByWork(){
+		return this.landByWork;
+	}
+	public void resetLandByWork(){
+		for(int i =0;i<landByWork.size();i++){
+			landByWork.set(i,0);
+		}
+	}
 	public int getYouthNbr(){
 		int nbr = 0;
 
@@ -130,5 +145,6 @@ public class PeopleThread{
 	public int getPeopleNbr(){
 		return peopleList.size();
 	}
+	public List<People> getPeopleList() {return peopleList;}
 }
 

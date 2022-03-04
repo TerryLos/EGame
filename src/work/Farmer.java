@@ -1,8 +1,10 @@
 package work;
 
+import calendar.Calendar;
 import market.FoodMarket;
 import market.Tradable;
 import people.BankAccount;
+import people.PeopleCharacteristics;
 import people.PeoplePossessions;
 import config.SocietyConfig;
 import java.lang.Math;
@@ -12,28 +14,29 @@ import config.SocietyConfig;
 
 public class Farmer extends Work{
 
+	private float yieldPrice;
 	FoodMarket foodSupply;
 	
-	public Farmer(FoodMarket foodSupply,BankAccount account){
+	public Farmer(FoodMarket foodSupply, BankAccount account, PeoplePossessions possessions){
 		super();
-		//So it allows to produce food since the start.
 		this.workedTime = SocietyConfig.FARMER_WORK_GATHERING;
 		this.foodSupply = foodSupply;
-		this.income = SocietyConfig.BASE_INCOME_FARMER;
 		this.account = account;
+		this.possession = possessions;
+		this.yieldPrice = 0;
 	}
 	@Override
-	public void work(){
+	public void work(int greedyness){
 		//Can only work if he has lands
 		if(possession.getLandSurface()>0){
 			if(workedTime>=SocietyConfig.FARMER_WORK_GATHERING){
-				foodSupply.addSupply(new Tradable(priceEstimate(),yieldEstimate(),account));
+				foodSupply.addSupply(new Tradable(priceEstimate(greedyness),yieldEstimate(),account));
 				workedTime = 0;
-				
+				this.yieldPrice=0;
+				gainExperience();
 			}
 			else
 				workedTime++;
-			gainExperience();
 		}
 	}
 
@@ -43,30 +46,45 @@ public class Farmer extends Work{
 			+"Production at :"+Integer.toString(workedTime)+"\t on :"+Integer.toString(SocietyConfig.FARMER_WORK_GATHERING)+"\n";
 	}
 	@Override
+	public String jobString(){
+		return "Farmer";
+	}
+	@Override
 	public void deleteOffer(){
 		foodSupply.deleteOffer(account);
 	}
 	@Override
 	public int yieldEstimate(){
-		return 1000+(int)(Math.log(1+getExperience()/Math.log(2))* SocietyConfig.FARMER_YIELD*possession.getLandSurface());
+		return  possession.getLandSurface()*SocietyConfig.FARMER_YIELD*(int)getExperience();
 	}
 	@Override
-	public int priceEstimate(){
+	public float priceEstimate(int greedyness){
 		Tradable bestOffer = foodSupply.getBestOffer();
-		int basePrice = (int)((1+ Math.abs(ThreadLocalRandom.current().nextGaussian()))*possession.getLandPrice() + account.getAverageExpenses())/yieldEstimate();
-		int lowestMarketPrice = 0;
-		if(bestOffer != null)
-			lowestMarketPrice = bestOffer.getAskedPrice();
+		int commodity = account.getSpentMoney();
+		if (this.yieldPrice != 0)
+			return this.yieldPrice;
+		//Avoids spike at startup because buying a land is an investment and shouldn't
+		//Be paid back directly
+		if(account.getSpentMoney()>= possession.getLandPrice())
+		 	commodity = account.getSpentMoney() - possession.getLandPrice();
+
+		float basePrice = (float)(Math.round(greedyness/4.0)*Math.abs(1+ThreadLocalRandom.current().nextGaussian()) * (possession.getLandPrice()/100.0 + commodity)/ yieldEstimate());
+		float lowestMarketPrice = bestOffer.getAskedPrice();
 
 		//Wants to at least cover its expenses.
 		if(basePrice>= lowestMarketPrice)
-			return basePrice;
+			this.yieldPrice = basePrice;
 		//Wants to maximise its revenues therefore place himself as first on the market
 		else{
 			if(lowestMarketPrice - 1 <= 0)
-				return 1;
+				this.yieldPrice = 1;
 			else
-				return lowestMarketPrice-1;
+				this.yieldPrice = lowestMarketPrice- (float) ThreadLocalRandom.current().nextDouble(lowestMarketPrice-basePrice);
 			}
+		return this.yieldPrice;
+	}
+	@Override
+	public float getWorkStatus(){
+		return workedTime/(float)SocietyConfig.FARMER_WORK_GATHERING;
 	}
 }

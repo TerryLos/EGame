@@ -32,8 +32,9 @@ public class Environnment {
                 endState = "Final state :\n"+society.toString();
                 System.out.println(endState);
                 Logger.INFO(endState);
-                Logger.WARN("---------------------End  Of  Simulation------------------");
+
             }
+            Logger.WARN("---------------------End  Of  Simulation------------------");
             Logger.stop();
 
         }catch(LoggerException le){
@@ -47,18 +48,17 @@ public class Environnment {
         DatabaseWriter dbWriter = new DatabaseWriter();
         if(envVariableCheckUp())
             System.exit(-1);
-
+        System.out.println("---------------------Starting Simulation------------------");
         Logger.WARN("---------------------Starting Simulation------------------");
         Logger.INFO("\t"+society.toString());
 
         //Iteration counter before switching to the next day
         while(i<EnvConfig.ACTION_BY_DAY*EnvConfig.NBR_SIM_DAY){
             //Error or death of the society
-            if(society.runSociety(dbWriter,writeRight) == -1)
+            if(society.runSociety(dbWriter,writeRight) == -1){
                 return false;
-
+            }
             writeRight = false;
-
             if(i % EnvConfig.ACTION_BY_DAY == 0 ){
                 calendar.incDays(1);
                 writeRight = true;
@@ -68,6 +68,7 @@ public class Environnment {
         }
         if(dbWriter.isConnected())
             dbWriter.close();
+        System.out.println("---------------------End of Simulation------------------");
         Logger.WARN("---------------------End of Simulation------------------");
         return true;
     }

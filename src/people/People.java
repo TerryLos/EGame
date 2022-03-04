@@ -2,16 +2,19 @@ package people;
 
 import config.EnvConfig;
 import market.FoodMarket;
+import market.LandMarket;
 import market.Market;
 import market.Tradable;
 import calendar.Calendar;
-import java.util.List;
+
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
 import config.PeopleConfig;
 import config.SocietyConfig;
 import people.mating.Genetic;
 import people.mating.MatingArea;
+import work.Job;
 import work.JobOffers;
 import work.Unemployed;
 import work.Work;
@@ -24,12 +27,14 @@ import logger.LoggerException;
 
 public class People implements Callable<People>{
     private int id;
+    int actions;
     private Calendar birthDate;
     private Calendar currentTime;
 
     private boolean sex;   
     private MatingArea sexAvailable;
     private People partner;
+    private List<People> children;
 
     private JobOffers jobOffers;
     private BankAccount account;
@@ -61,11 +66,14 @@ public class People implements Callable<People>{
     	this.currentState = new PeopleState();
         this.possession = new PeoplePossessions();
         this.work = new Work();
+        this.children = new LinkedList<People>();
         this.peopleCharacteristics = peopleCharacteristics;
+        if(!sex)
+            this.peopleCharacteristics.setMale();
 
     }
     public boolean isAdult(){
-        return (currentTime.getYear() - birthDate.getYear() >= PeopleConfig.PEOPLE_ADULT_AGE);
+        return birthDate.isDelayElapsed(currentTime,PeopleConfig.PEOPLE_ADULT_AGE,2);
     }
     public People(int id){
         this.id = id;
@@ -89,23 +97,50 @@ public class People implements Callable<People>{
      */
     public void suicide() throws LoggerException{
         int land = possession.getLandSurface();
+        int landAvgPrice = 0;
+        int money = account.getBankAccount();
+        Tradable house;
         BankAccount societyAccount = account.getStateAccount();
+        int childNbr = children.size();
+        if(land > 0)
+            landAvgPrice = possession.getLandPrice()/land;
         //Deletes its offer
         work.deleteOffer();
-        //Gives back the land bought.
-        while(land > 0){
-            markets.get(2).addSupply(new Tradable(SocietyConfig.INIT_LAND_PRICE,SocietyConfig.LAND_PARCEL,societyAccount));
-            land -= SocietyConfig.LAND_PARCEL;
+        //Gives back the land bought if no children.
+        if(childNbr == 0){
+            while((house = possession.getHouse()) != null){
+                house.setReceiverAccount(societyAccount);
+                markets.get(1).addSupply(house);
+            }
+            while(land > 0){
+                markets.get(2).addSupply(new Tradable( ((LandMarket)markets.get(2)).surfacePricing(SocietyConfig.INIT_LAND_PRICE, possession.getLandSurface(), land),SocietyConfig.LAND_PARCEL,societyAccount));
+                land -= SocietyConfig.LAND_PARCEL;
+            }
         }
-        jobOffers.takeOffer("Unemployed",work,account);
+        else{
+            //Get rid of the houses before so that we have the true bought land
+            for (People child : children){
+                if((house = possession.getHouse()) != null){
+                    house.setReceiverAccount(child.getBankAccount());
+                    child.getPeoplePossessions().addHouse(house);
+                }
+            }
+            for (People child : children){
+                child.getBankAccount().addMoney(money/(float)childNbr,"Death");
+                child.getPeoplePossessions().addLandSurface(new Tradable(land / (float)childNbr, (land / childNbr)
+                        * landAvgPrice,child.getBankAccount()));
+            }
+        }
+        jobOffers.takeOffer("Nowork",work,null,null);
     }
     @Override
     public String toString(){
 
         String charact = "";
-        if(EnvConfig.FULL_INFO)
+        if(EnvConfig.FULL_INFO){
             charact = peopleCharacteristics.toString();
-
+            charact += "Children nbr : "+children.size()+" ";
+        }
     	if(sex)
     		return currentState.toString()+charact+"sex : F\t"+account.toString()+work.toString()+possession.toString();
 
@@ -119,48 +154,35 @@ public class People implements Callable<People>{
      */
     @Override
     public People call() throws Exception{
-        int maxIncome = 0;
-        int tmpIncome = 0;
-        String job="Unemployed";
-
+        actions += 1;
+        actions %= EnvConfig.ACTION_BY_DAY;
         if(isAdult()){
-            //currentState.setAging((currentTime.getYear() - birthDate.getYear())/PeopleConfig.PEOPLE_ADULT_AGE);
+            currentState.setAging((currentTime.getYear() - birthDate.getYear())/PeopleConfig.PEOPLE_ADULT_AGE);
         	currentState.updateState();
-            //TODO ADD AGING WHICH IS ALREADY READY IN PEOPLE STATE
-    	    //Looks for new jobs 4 times a year
-            if(currentTime.getDay() == 1 && (currentTime.getMonth()%3)==1){
-                //Updates its revenues.
-                for(String jobs : SocietyConfig.AVAILABLE_JOBS_DIC.keySet()){
-                    tmpIncome = jobOffers.getIncome(jobs);
-                    if(tmpIncome > maxIncome && tmpIncome >work.getIncome()){
-                        job = jobs;
-                        maxIncome = tmpIncome;
-                    }
-                }
-
-                if(maxIncome >= work.getIncome()){
-                    work = jobOffers.takeOffer(job,work,account);
-                    work.setPossession(possession);
-                }
-            }
-            if(currentTime.getDay() == 1){
-                work.setIncome(account.getAverageIncome());
+    	    //Computes the income each month
+            work.setIncome(account.getReceivedMoney(work.jobString()));
+            if(currentTime.getDay() == 1 && actions == 0){
+                jobOffers.setIncome(getBankAccount(),currentTime);
                 account.resetMoneyHistoric();
             }
-    	//The element is dead
-        	if(currentState.isDead())
-        		return new People(-1);
 
-        	else if (getNextAction()==1){
+            jobSeeking();
+        	if (getNextAction()==1){
                 People tmp = new People(0,currentTime,markets,sexAvailable,jobOffers,Genetic.geneticModification(this,partner));
+                this.addChild(tmp);
+                partner.addChild(tmp);
                 partner = null;
                 return tmp;
             }
-    	
+            //The element is dead
+            else if(currentState.isDead())
+                return new People(-1);
+
         }
 
         return null;
     }
+    public synchronized void addChild(People child){ children.add(child);}
     public int getId(){
         return id;
     }
@@ -174,10 +196,14 @@ public class People implements Callable<People>{
     	return currentTime;
     }
     public void setId(int id){
+        this.account.setOwner(id);
         this.id = id;
     }
     public PeopleCharacteristics getPeopleCharacteristics(){
         return peopleCharacteristics;
+    }
+    public PeoplePossessions getPeoplePossessions(){
+        return possession;
     }
 
     /*--------------------------------------------------------AI part--------------------------------------------------*/
@@ -189,6 +215,9 @@ public class People implements Callable<People>{
     3 - sex
     4 - give birth
     5 - buy food
+    6 - buy House
+    7 - buy Land
+    8 - buy Wood
     */
     /*checks what should be the next action
 	For now ,a worker as a 8h shift per day. Since we allow 3 actions on a day.
@@ -203,15 +232,15 @@ public class People implements Callable<People>{
         if(work.getLastWorkedTime()== null || (!currentTime.equals(work.getLastWorkedTime()) && !(work instanceof Unemployed)))
             return action(2,true);
 
-        PeopleState startState[] = new PeopleState[3];
-        BankAccount startAccount[] = new BankAccount[3];
-        PeoplePossessions startPossession[] = new PeoplePossessions[3];
+        PeopleState[] startState = new PeopleState[3];
+        BankAccount[] startAccount = new BankAccount[3];
+        PeoplePossessions[] startPossession = new PeoplePossessions[3];
 
         startState[0] = currentState.copy();
         startAccount[0] = account.copy();
         startPossession[0] = possession.copy();
 
-        for(int i=0;i<8;i++){
+        for(int i=0;i<9;i++){
             //Checks its utility
             action(i,false);
             utility = getBestUtility(2,startState,startAccount,startPossession);
@@ -228,6 +257,7 @@ public class People implements Callable<People>{
             account.resume(startAccount[0] );
             possession.resume(startPossession[0]);
         }
+
         return action(highestActionIndex,true);
 
     }
@@ -242,7 +272,7 @@ public class People implements Callable<People>{
             startAccount[searchDepth] = account.copy();
             startPossession[searchDepth] = possession.copy();
 
-            for(int j=0;j<8;j++){
+            for(int j=0;j<9;j++){
                 action(j,false);
                 tmp = getBestUtility(searchDepth-1,startState,startAccount,startPossession);
 
@@ -251,7 +281,6 @@ public class People implements Callable<People>{
                         System.out.print("	");
                     System.out.println(Integer.toString(tmp) + " "+Integer.toString(j));
                 }
-
                 if(tmp>bestUtility){
                     bestUtility = tmp;
                 }
@@ -269,20 +298,20 @@ public class People implements Callable<People>{
     public int utility(){
         int jobIncome = 0;
         if(work.yieldEstimate()>0)
-            jobIncome = (int)work.yieldEstimate()*work.priceEstimate();
+            jobIncome = (int)(work.yieldEstimate()*work.priceEstimate(peopleCharacteristics.getGreedyness())*work.getWorkStatus());
 
         if(currentState.isPregnant() && currentTime.timeElapsedMonth(currentState.getPregnantDate()) > PeopleConfig.PEOPLE_GESTATION_TIME){
             return currentState.getHealth()*peopleCharacteristics.getHealth()+currentState.getSleep()*peopleCharacteristics.getSleep()+
                     currentState.getFood()*peopleCharacteristics.getFood()-currentState.getLibido()*peopleCharacteristics.getLibido() -
                     currentTime.timeElapsedMonth(currentState.getPregnantDate()) * peopleCharacteristics.getPregnancy() +
-                    jobIncome*peopleCharacteristics.getIncome()+
-                    ((int)account.getBankAccount()/100+(int)(possession.getOwnership((FoodMarket) markets.get(0))/100))*peopleCharacteristics.getPossession();
+                    jobIncome*peopleCharacteristics.getIncome()
+                    +(possession.getOwnership((FoodMarket) markets.get(0))/100*peopleCharacteristics.getPossession());
         }
         else
             return currentState.getHealth()*peopleCharacteristics.getHealth()+currentState.getSleep()*peopleCharacteristics.getSleep()+
                     currentState.getFood()*peopleCharacteristics.getFood()-currentState.getLibido()*peopleCharacteristics.getLibido() +
-                    jobIncome*peopleCharacteristics.getIncome()+
-                    ((int)account.getBankAccount()/100+(int)(possession.getOwnership((FoodMarket) markets.get(0))/100))*peopleCharacteristics.getPossession();
+                    jobIncome*peopleCharacteristics.getIncome()
+                    +(possession.getOwnership((FoodMarket) markets.get(0))/100*peopleCharacteristics.getPossession());
     }
 
     /*
@@ -302,10 +331,14 @@ public class People implements Callable<People>{
             offers = markets.get(0).peekSupply(possession.neededFood()+additionalFood,account.getBankAccount());
 
         for(Tradable t:offers){
-            possession.addFood(t.getVolume());
-            amountToPay += t.getAskedPrice()*t.getVolume();
+            amountToPay = (int) t.getAskedPrice();
+            if(t.getVolume() != 0){
+                possession.addFood(t.getVolume());
+                amountToPay = (int) (t.getAskedPrice()*t.getVolume());
+            }
+
             if(onSupply && t.getReceiverAccount() != null)
-                t.getReceiverAccount().addMoney(t.getAskedPrice()*t.getVolume());
+                t.getReceiverAccount().addMoney(amountToPay,"Farmer");
         }
 
         //Avoids locking and unlocking uselessly
@@ -323,10 +356,38 @@ public class People implements Callable<People>{
             offers = markets.get(2).peekSupply(SocietyConfig.LAND_PARCEL,account.getBankAccount());
 
         for(Tradable t:offers){
-            possession.addLandSurface(t.getVolume(),t.getAskedPrice());
-            amountToPay += t.getAskedPrice()*t.getVolume();
+            amountToPay = (int) t.getAskedPrice();
+            if(t.getVolume() != 0){
+                possession.addLandSurface(t);
+                amountToPay = (int) (t.getAskedPrice()*t.getVolume());
+            }
+
             if(onSupply && t.getReceiverAccount() != null)
-                t.getReceiverAccount().addMoney(t.getAskedPrice());
+                t.getReceiverAccount().addMoney(amountToPay,"Land");
+        }
+
+        //Avoids locking and unlocking uselessly
+        if(amountToPay>0)
+            account.withdrawMoney(amountToPay);
+    }
+    private void buyWood(boolean onSupply){
+        List<Tradable> offers;
+        int amountToPay = 0;
+
+        if(onSupply)
+            offers = markets.get(3).consumeSupply(work.getNeededWood(),account.getBankAccount());
+        else
+            offers = markets.get(3).peekSupply(work.getNeededWood(),account.getBankAccount());
+
+        for(Tradable t:offers){
+            amountToPay = (int) t.getAskedPrice();
+            if(t.getVolume() != 0){
+                possession.addWood(t);
+                amountToPay = (int) (t.getAskedPrice()*t.getVolume());
+            }
+
+            if(onSupply && t.getReceiverAccount() != null)
+                t.getReceiverAccount().addMoney(amountToPay,"Woodcutter");
         }
 
         //Avoids locking and unlocking uselessly
@@ -334,10 +395,15 @@ public class People implements Callable<People>{
             account.withdrawMoney(amountToPay);
     }
     private void buyHouse(boolean onSupply){
-        if(account.withdrawMoney(SocietyConfig.HOUSE_PRICE) && markets.get(1).getSupply()>0){
-            if(onSupply)
-                markets.get(1).consumeSupply(1,account.getBankAccount());
-            possession.addHouse(1);
+        Tradable offer = markets.get(1).getBestOffer();
+        if(offer.getReceiverAccount() != null && account.withdrawMoney(offer.getAskedPrice())){
+            if(onSupply){
+                //The house has been bought in between the peek and the poll
+                if(!markets.get(1).takeBestOffer(offer))
+                    return;
+                offer.getReceiverAccount().addMoney(offer.getAskedPrice(),"Builder");
+                possession.addHouse(offer);
+            }
         }
     }
     private void sex(){
@@ -345,7 +411,7 @@ public class People implements Callable<People>{
         if(sex){
             if((partner = sexAvailable.getFromMating())!=null){
                 this.partner = partner;
-                currentState.hadSex(sex,currentTime);
+                currentState.hadSex(sex && children.size()<SocietyConfig.CHILD_ROOF,currentTime);
             }
         }
         else{
@@ -380,7 +446,7 @@ public class People implements Callable<People>{
 
                 if(takeAction){
                     work.setWorkingTime(currentTime);
-                    work.work();
+                    work.work(peopleCharacteristics.getGreedyness());
                 }
                 break;
 
@@ -401,6 +467,9 @@ public class People implements Callable<People>{
             case 7:
                 buyLand(takeAction);
                 break;
+            case 8:
+                buyWood(takeAction);
+                break;
 
 
             default:
@@ -409,6 +478,56 @@ public class People implements Callable<People>{
 
         return 0;
 
+    }
+    public void jobSeeking() throws LoggerException{
+        int workIncome;
+        int marketIncome;
+        int lastSalary = work.getIncome();
+        PriorityQueue<Job> jobRank = new PriorityQueue <>();
+        Job lookup;
+        //Gives randomly jobs at startup
+        if(currentTime.getDaysSinceStart() == 1 || work.getLastWorkSwitch() == null){
+            int dictSize = SocietyConfig.AVAILABLE_JOBS_DIC.size();
+            int limit = 0;
+            List<String> names = new ArrayList<>(SocietyConfig.AVAILABLE_JOBS_DIC.keySet());
+            String jobs;
+            jobs = names.get(ThreadLocalRandom.current().nextInt(0,dictSize-1));
+            while((work = jobOffers.takeOffer(jobs, work, account, possession)).jobString().equals("Unemployed") && limit <10){
+                jobs = names.get(ThreadLocalRandom.current().nextInt(0,dictSize-1));
+                limit += 1;
+            }
+            work.setLastWorkSwitch(currentTime);
+        }
+        //Can't swich too othen
+        //Or looks for job when he gets broke or doesn't receive enough income
+        //Lets the first month pass in order to have the income computed
+        else if(((PeopleConfig.PEOPLE_ONACCOUNT && account.getBankAccount() <= peopleCharacteristics.getJobChangeRate())
+            || (!PeopleConfig.PEOPLE_ONACCOUNT && lastSalary <= peopleCharacteristics.getJobChangeRate()))
+            && work.getLastWorkSwitch().isDelayElapsed(currentTime,PeopleConfig.PEOPLE_WORK_SWITCH,0) &&
+            currentTime.getDaysSinceStart()>31){
+            for (String jobs : SocietyConfig.AVAILABLE_JOBS_DIC.keySet()) {
+                //No need to check the current job
+                if(jobs.equals("Nowork") || (work.jobString().equals(jobs)))
+                    continue;
+
+                workIncome = jobOffers.getIncome(jobs);
+                marketIncome = jobOffers.getIncomeByMarket(jobs,possession);
+                if( workIncome > marketIncome)
+                    jobRank.add(new Job(workIncome,jobs));
+                else
+                    jobRank.add(new Job(marketIncome,jobs));
+            }
+            lookup = jobRank.poll();
+            while(jobRank.size()!= 0 && lookup.getSalary() > lastSalary){
+                if(jobOffers.isAvailable(lookup.getName())){
+                    work = jobOffers.takeOffer(lookup.getName(),work,account,possession);
+                    work.setLastWorkSwitch(currentTime);
+                    if(!work.jobString().equals("Nowork"))
+                        break;
+                }
+                lookup = jobRank.poll();
+            }
+        }
     }
 
 }
