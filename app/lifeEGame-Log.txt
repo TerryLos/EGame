@@ -1,0 +1,601 @@
+[INFO] -Jun 06,2022 19:25- Init the database writer.
+[33m[WARN] -Jun 06,2022 19:25- {START UP} The number of thread should ideally be accepted by a integer division.[0m
+[33m[WARN] -Jun 06,2022 19:25- ---------------------Starting Simulation------------------[0m
+[INFO] -Jun 06,2022 19:25- 24	 People 11 died
+State :
+Health : -16	 Hungryness : -71
+ sleepiness : 87	 libido : 0
+Pregnant : true	 At Date : 2-1-19
+ Aging : 2
+ID : 11	People characteristics -
+ health:6	 sleep: 6
+food:23	 libido: 11
+pregnancy:12	 income: 10
+possession:28	 greediness: 7
+stinginess: 1670
+Children nbr : 0 sex : F	Bank account : 1842.2452
+job : Builder	 Income : 0	 Experience : 1.0
+Production at :0	 on :60
+filled wood : 0 and land : 100Possesses : food :337	 house :0	 land :100 m²
+ stone: 0	 wood : 0
+ Ownership : €1500.1406 
+
+[INFO] -Jun 06,2022 19:25- 37	 People 5 died
+State :
+Health : -4	 Hungryness : -72
+ sleepiness : 100	 libido : 91
+Pregnant : false
+ Aging : 2
+ID : 5	People characteristics -
+ health:6	 sleep: 16
+food:10	 libido: 1
+pregnancy:15	 income: 20
+possession:28	 greediness: 4
+stinginess: 647
+Children nbr : 0 sex : F	Bank account : 669.0
+job : Woodcutter	 Income : 0	 Experience : 1.0
+Production at :11	 on :30
+Possesses : food :228	 house :0	 land :100 m²
+ stone: 0	 wood : 0
+ Ownership : €2155.0454 
+
+[INFO] -Jun 06,2022 19:25- 68	 People 10 died
+State :
+Health : -4	 Hungryness : -86
+ sleepiness : 38	 libido : 49
+Pregnant : false
+ Aging : 2
+ID : 10	People characteristics -
+ health:0	 sleep: 11
+food:29	 libido: 8
+pregnancy:0	 income: 23
+possession:1	 greediness: 8
+stinginess: 234
+Children nbr : 0 sex : M	Bank account : 0.0
+job : Builder	 Income : 0	 Experience : 1.0
+Production at :41	 on :60
+filled wood : 20 and land : 100Possesses : food :0	 house :0	 land :400 m²
+ stone: 9	 wood : 7
+ Ownership : €2232.873 
+
+[INFO] -Jun 06,2022 19:25- 70	 People 7 died
+State :
+Health : -14	 Hungryness : -65
+ sleepiness : 96	 libido : 101
+Pregnant : false
+ Aging : 2
+ID : 7	People characteristics -
+ health:24	 sleep: 22
+food:8	 libido: 2
+pregnancy:0	 income: 10
+possession:19	 greediness: 5
+stinginess: 333
+Children nbr : 0 sex : M	Bank account : 0.0
+job : Builder	 Income : 0	 Experience : 1.0
+Production at :52	 on :60
+filled wood : 20 and land : 100Possesses : food :0	 house :0	 land :200 m²
+ stone: 81	 wood : 20
+ Ownership : €2151.0405 
+
+[INFO] -Jun 06,2022 19:25- 78	 People 9 died
+State :
+Health : -7	 Hungryness : -63
+ sleepiness : 55	 libido : 101
+Pregnant : false
+ Aging : 2
+ID : 9	People characteristics -
+ health:17	 sleep: 7
+food:15	 libido: 15
+pregnancy:0	 income: 8
+possession:18	 greediness: 6
+stinginess: 487
+Children nbr : 0 sex : M	Bank account : 0.0
+job : Builder	 Income : 0	 Experience : 1.0
+Production at :39	 on :60
+filled wood : 20 and land : 100Possesses : food :0	 house :0	 land :200 m²
+ stone: 2	 wood : 42
+ Ownership : €1197.339 
+
+[INFO] -Jun 06,2022 19:25- 207	 People 12 died
+State :
+Health : -2	 Hungryness : -89
+ sleepiness : 100	 libido : 0
+Pregnant : true	 At Date : 2-7-7
+ Aging : 2
+ID : 12	People characteristics -
+ health:12	 sleep: 31
+food:13	 libido: 13
+pregnancy:10	 income: 9
+possession:8	 greediness: 4
+stinginess: 938
+Children nbr : 2 sex : F	Bank account : 0.0
+job : Farmer	 Income : 0	 Experience : 1.0
+Production at :11	 on :20
+Possesses : food :0	 house :0	 land :100 m²
+ stone: 0	 wood : 20
+ Ownership : €896.6743 
+
+[INFO] -Jun 06,2022 19:25- 646	 People 1 died
+State :
+Health : -13	 Hungryness : 61
+ sleepiness : -58	 libido : 100
+Pregnant : false
+ Aging : 2
+ID : 1	People characteristics -
+ health:4	 sleep: 9
+food:15	 libido: 11
+pregnancy:16	 income: 22
+possession:19	 greediness: 2
+stinginess: 1303
+Children nbr : 4 sex : F	Bank account : 1268.0
+job : Farmer	 Income : 0	 Experience : 2.0000002
+Production at :19	 on :20
+Possesses : food :7	 house :0	 land :200 m²
+ stone: 0	 wood : 0
+ Ownership : €1560.0078 
+
+[INFO] -Jun 06,2022 19:25- 1020	 People 28 died
+State :
+Health : -6	 Hungryness : -63
+ sleepiness : 85	 libido : 17
+Pregnant : false
+ Aging : 2
+ID : 28	People characteristics -
+ health:21	 sleep: 14
+food:24	 libido: 6
+pregnancy:0	 income: 5
+possession:11	 greediness: 7
+stinginess: 509
+Children nbr : 0 sex : M	Bank account : 2644.0
+job : Woodcutter	 Income : 0	 Experience : 1.0
+Production at :0	 on :30
+Possesses : food :0	 house :0	 land :0 m²
+ stone: 0	 wood : 0
+ Ownership : €0.0 
+
+[INFO] -Jun 06,2022 19:25- 1025	 People 22 died
+State :
+Health : -5	 Hungryness : -69
+ sleepiness : 95	 libido : 37
+Pregnant : false
+ Aging : 2
+ID : 22	People characteristics -
+ health:21	 sleep: 14
+food:35	 libido: 6
+pregnancy:0	 income: 5
+possession:17	 greediness: 7
+stinginess: 509
+Children nbr : 1 sex : M	Bank account : 2332.0
+job : Farmer	 Income : 0	 Experience : 1.0
+Production at :0	 on :20
+Possesses : food :0	 house :0	 land :0 m²
+ stone: 0	 wood : 0
+ Ownership : €3.0517578E-5 
+
+[INFO] -Jun 06,2022 19:25- 1026	 People 26 died
+State :
+Health : -1	 Hungryness : -71
+ sleepiness : 85	 libido : 101
+Pregnant : false
+ Aging : 2
+ID : 26	People characteristics -
+ health:25	 sleep: 14
+food:24	 libido: 6
+pregnancy:0	 income: 5
+possession:9	 greediness: 7
+stinginess: 509
+Children nbr : 0 sex : F	Bank account : 2377.0
+job : Woodcutter	 Income : 0	 Experience : 1.2
+Production at :18	 on :30
+Possesses : food :0	 house :0	 land :50 m²
+ stone: 0	 wood : 0
+ Ownership : €17500.0 
+
+[INFO] -Jun 06,2022 19:25- 1026	 People 24 died
+State :
+Health : -3	 Hungryness : -69
+ sleepiness : 84	 libido : 27
+Pregnant : false
+ Aging : 2
+ID : 24	People characteristics -
+ health:21	 sleep: 14
+food:9	 libido: 6
+pregnancy:0	 income: 5
+possession:9	 greediness: 7
+stinginess: 509
+Children nbr : 0 sex : F	Bank account : 3549.0
+job : Farmer	 Income : 556	 Experience : 1.5000001
+Production at :11	 on :20
+Possesses : food :0	 house :0	 land :150 m²
+ stone: 0	 wood : 0
+ Ownership : €17860.0 
+
+[INFO] -Jun 06,2022 19:25- 1027	 People 13 died
+State :
+Health : -5	 Hungryness : -57
+ sleepiness : 97	 libido : 21
+Pregnant : false
+ Aging : 3
+ID : 13	People characteristics -
+ health:23	 sleep: 9
+food:17	 libido: 19
+pregnancy:0	 income: 6
+possession:11	 greediness: 5
+stinginess: 712
+Children nbr : 8 sex : M	Bank account : 8088.0
+job : Unemployed	 Income : 0
+Possesses : food :0	 house :0	 land :300 m²
+ stone: 0	 wood : 0
+ Ownership : €1080.0 
+
+[INFO] -Jun 06,2022 19:25- 1027	 People 27 died
+State :
+Health : -20	 Hungryness : -91
+ sleepiness : 100	 libido : 51
+Pregnant : false
+ Aging : 2
+ID : 27	People characteristics -
+ health:24	 sleep: 20
+food:7	 libido: 9
+pregnancy:0	 income: 20
+possession:4	 greediness: 8
+stinginess: 261
+Children nbr : 1 sex : M	Bank account : 3335.0
+job : Woodcutter	 Income : 0	 Experience : 1.0
+Production at :0	 on :30
+Possesses : food :0	 house :0	 land :37 m²
+ stone: 0	 wood : 0
+ Ownership : €4162.5 
+
+[INFO] -Jun 06,2022 19:25- 1028	 People 21 died
+State :
+Health : -18	 Hungryness : -80
+ sleepiness : 90	 libido : 24
+Pregnant : false
+ Aging : 2
+ID : 21	People characteristics -
+ health:20	 sleep: 18
+food:8	 libido: 23
+pregnancy:0	 income: 31
+possession:7	 greediness: 9
+stinginess: 1010
+Children nbr : 0 sex : M	Bank account : 3339.0
+job : Miner	 Income : 0	 Experience : 1.0
+Production at :2	 on :5
+Possesses : food :0	 house :0	 land :37 m²
+ stone: 0	 wood : 0
+ Ownership : €4162.5 
+
+[INFO] -Jun 06,2022 19:25- 1028	 People 19 died
+State :
+Health : -2	 Hungryness : -85
+ sleepiness : 92	 libido : 0
+Pregnant : true	 At Date : 4-9-29
+ Aging : 2
+ID : 19	People characteristics -
+ health:10	 sleep: 9
+food:17	 libido: 19
+pregnancy:0	 income: 6
+possession:11	 greediness: 5
+stinginess: 712
+Children nbr : 1 sex : F	Bank account : 2912.0
+job : Builder	 Income : 0	 Experience : 1.0
+Production at :0	 on :60
+filled wood : 20 and land : 37Possesses : food :0	 house :0	 land :0 m²
+ stone: 0	 wood : 140
+ Ownership : €450.64227 
+
+[INFO] -Jun 06,2022 19:25- 1028	 People 29 died
+State :
+Health : -11	 Hungryness : -67
+ sleepiness : 98	 libido : 100
+Pregnant : false
+ Aging : 2
+ID : 29	People characteristics -
+ health:9	 sleep: 18
+food:17	 libido: 0
+pregnancy:16	 income: 21
+possession:7	 greediness: 4
+stinginess: 839
+Children nbr : 0 sex : F	Bank account : 3100.0
+job : Woodcutter	 Income : 0	 Experience : 1.0
+Production at :0	 on :30
+Possesses : food :0	 house :0	 land :0 m²
+ stone: 0	 wood : 0
+ Ownership : €0.0 
+
+[INFO] -Jun 06,2022 19:25- 1029	 People 16 died
+State :
+Health : -19	 Hungryness : -71
+ sleepiness : 93	 libido : 0
+Pregnant : true	 At Date : 4-10-3
+ Aging : 2
+ID : 16	People characteristics -
+ health:24	 sleep: 20
+food:2	 libido: 9
+pregnancy:18	 income: 32
+possession:4	 greediness: 8
+stinginess: 261
+Children nbr : 1 sex : F	Bank account : 528.0
+job : Unemployed	 Income : 0
+Possesses : food :0	 house :0	 land :100 m²
+ stone: 0	 wood : 0
+ Ownership : €2520.0 
+
+[INFO] -Jun 06,2022 19:25- 1029	 People 25 died
+State :
+Health : -1	 Hungryness : -61
+ sleepiness : 91	 libido : 4
+Pregnant : false
+ Aging : 2
+ID : 25	People characteristics -
+ health:43	 sleep: 18
+food:17	 libido: 6
+pregnancy:0	 income: 18
+possession:11	 greediness: 5
+stinginess: 712
+Children nbr : 1 sex : M	Bank account : 2219.0
+job : Woodcutter	 Income : 0	 Experience : 1.0
+Production at :4	 on :30
+Possesses : food :0	 house :0	 land :137 m²
+ stone: 0	 wood : 0
+ Ownership : €5002.5 
+
+[INFO] -Jun 06,2022 19:25- 1030	 People 15 died
+State :
+Health : -7	 Hungryness : -75
+ sleepiness : 66	 libido : 0
+Pregnant : true	 At Date : 4-10-13
+ Aging : 2
+ID : 15	People characteristics -
+ health:9	 sleep: 37
+food:17	 libido: 8
+pregnancy:16	 income: 21
+possession:7	 greediness: 1
+stinginess: 839
+Children nbr : 2 sex : F	Bank account : 1689.0
+job : Miner	 Income : 0	 Experience : 1.0
+Production at :1	 on :5
+Possesses : food :0	 house :0	 land :100 m²
+ stone: 0	 wood : 0
+ Ownership : €360.00003 
+
+[INFO] -Jun 06,2022 19:25- 1031	 People 14 died
+State :
+Health : -5	 Hungryness : -74
+ sleepiness : 87	 libido : 47
+Pregnant : false
+ Aging : 3
+ID : 14	People characteristics -
+ health:21	 sleep: 14
+food:24	 libido: 6
+pregnancy:0	 income: 5
+possession:9	 greediness: 7
+stinginess: 509
+Children nbr : 15 sex : M	Bank account : 9027.0
+job : Unemployed	 Income : 0
+Possesses : food :0	 house :0	 land :200 m²
+ stone: 0	 wood : 0
+ Ownership : €959.99994 
+
+[INFO] -Jun 06,2022 19:25- 1032	 People 3 died
+State :
+Health : -8	 Hungryness : -90
+ sleepiness : 83	 libido : 102
+Pregnant : false
+ Aging : 3
+ID : 3	People characteristics -
+ health:14	 sleep: 19
+food:4	 libido: 28
+pregnancy:0	 income: 7
+possession:23	 greediness: 3
+stinginess: 877
+Children nbr : 3 sex : M	Bank account : 9641.0
+job : Unemployed	 Income : 0
+Possesses : food :0	 house :0	 land :500 m²
+ stone: 0	 wood : 0
+ Ownership : €2400.0 
+
+[INFO] -Jun 06,2022 19:25- 1033	 People 0 died
+State :
+Health : -4	 Hungryness : -69
+ sleepiness : 89	 libido : 9
+Pregnant : false
+ Aging : 3
+ID : 0	People characteristics -
+ health:9	 sleep: 18
+food:17	 libido: 8
+pregnancy:16	 income: 21
+possession:7	 greediness: 1
+stinginess: 839
+Children nbr : 4 sex : F	Bank account : 7237.0
+job : Unemployed	 Income : 0
+Possesses : food :0	 house :0	 land :600 m²
+ stone: 0	 wood : 0
+ Ownership : €3120.0 
+
+[INFO] -Jun 06,2022 19:25- 1033	 People 2 died
+State :
+Health : -3	 Hungryness : -82
+ sleepiness : 95	 libido : 28
+Pregnant : false
+ Aging : 3
+ID : 2	People characteristics -
+ health:3	 sleep: 11
+food:4	 libido: 7
+pregnancy:28	 income: 16
+possession:27	 greediness: 6
+stinginess: 1700
+Children nbr : 4 sex : F	Bank account : 11342.0
+job : Unemployed	 Income : 0
+Possesses : food :0	 house :0	 land :200 m²
+ stone: 0	 wood : 0
+ Ownership : €840.00006 
+
+[INFO] -Jun 06,2022 19:25- 1035	 People 18 died
+State :
+Health : -3	 Hungryness : -80
+ sleepiness : 100	 libido : 0
+Pregnant : true	 At Date : 4-8-10
+ Aging : 2
+ID : 18	People characteristics -
+ health:12	 sleep: 31
+food:1	 libido: 19
+pregnancy:10	 income: 9
+possession:8	 greediness: 4
+stinginess: 938
+Children nbr : 1 sex : F	Bank account : 1840.0
+job : Unemployed	 Income : 0
+Possesses : food :0	 house :0	 land :37 m²
+ stone: 0	 wood : 76
+ Ownership : €4456.629 
+
+[INFO] -Jun 06,2022 19:25- 1035	 People 8 died
+State :
+Health : -10	 Hungryness : -70
+ sleepiness : 88	 libido : 24
+Pregnant : false
+ Aging : 3
+ID : 8	People characteristics -
+ health:17	 sleep: 7
+food:15	 libido: 10
+pregnancy:19	 income: 8
+possession:21	 greediness: 5
+stinginess: 1441
+Children nbr : 4 sex : F	Bank account : 4764.0
+job : Unemployed	 Income : 0
+Possesses : food :0	 house :0	 land :400 m²
+ stone: 0	 wood : 0
+ Ownership : €1440.0 
+
+[INFO] -Jun 06,2022 19:25- 1035	 People 20 died
+State :
+Health : 57	 Hungryness : -61
+ sleepiness : 99	 libido : 24
+Pregnant : false
+ Aging : 2
+ID : 20	People characteristics -
+ health:36	 sleep: 14
+food:24	 libido: 6
+pregnancy:0	 income: 5
+possession:9	 greediness: 7
+stinginess: 517
+Children nbr : 1 sex : M	Bank account : 1702.0
+job : Unemployed	 Income : 0
+Possesses : food :0	 house :0	 land :163 m²
+ stone: 0	 wood : 0
+ Ownership : €23113.334 
+
+[INFO] -Jun 06,2022 19:25- 1036	 People 17 died
+State :
+Health : -32	 Hungryness : -82
+ sleepiness : 96	 libido : 103
+Pregnant : false
+ Aging : 2
+ID : 17	People characteristics -
+ health:19	 sleep: 14
+food:20	 libido: 6
+pregnancy:0	 income: 5
+possession:9	 greediness: 7
+stinginess: 509
+Children nbr : 1 sex : M	Bank account : 3283.0
+job : Farmer	 Income : 0	 Experience : 1.0
+Production at :10	 on :20
+Possesses : food :0	 house :0	 land :213 m²
+ stone: 0	 wood : 0
+ Ownership : €31053.334 
+
+[INFO] -Jun 06,2022 19:25- 1037	 People 23 died
+State :
+Health : -8	 Hungryness : -103
+ sleepiness : 11	 libido : 100
+Pregnant : false
+ Aging : 2
+ID : 23	People characteristics -
+ health:9	 sleep: 3
+food:17	 libido: 6
+pregnancy:0	 income: 21
+possession:7	 greediness: 1
+stinginess: 839
+Children nbr : 0 sex : M	Bank account : 4425.0
+job : Farmer	 Income : 0	 Experience : 1.0
+Production at :6	 on :20
+Possesses : food :0	 house :0	 land :163 m²
+ stone: 0	 wood : 0
+ Ownership : €113193.336 
+
+[INFO] -Jun 06,2022 19:25- 1039	 People 4 died
+State :
+Health : -18	 Hungryness : -102
+ sleepiness : 94	 libido : 43
+Pregnant : false
+ Aging : 3
+ID : 4	People characteristics -
+ health:24	 sleep: 20
+food:2	 libido: 9
+pregnancy:18	 income: 20
+possession:4	 greediness: 8
+stinginess: 261
+Children nbr : 4 sex : F	Bank account : 8989.0
+job : Unemployed	 Income : 0
+Possesses : food :0	 house :0	 land :100 m²
+ stone: 0	 wood : 0
+ Ownership : €1320.0001 
+
+[INFO] -Jun 06,2022 19:25- 1050	 People 6 died
+State :
+Health : -4	 Hungryness : -82
+ sleepiness : 88	 libido : 101
+Pregnant : false
+ Aging : 3
+ID : 6	People characteristics -
+ health:20	 sleep: 18
+food:8	 libido: 23
+pregnancy:3	 income: 17
+possession:7	 greediness: 9
+stinginess: 1010
+Children nbr : 4 sex : F	Bank account : 7752.0
+job : Unemployed	 Income : 0
+Possesses : food :0	 house :0	 land :300 m²
+ stone: 0	 wood : 0
+ Ownership : €1440.0 
+
+[INFO] -Jun 06,2022 19:25- 1063	 People 30 died
+State :
+Health : -23	 Hungryness : -103
+ sleepiness : 64	 libido : 100
+Pregnant : false
+ Aging : 2
+ID : 30	People characteristics -
+ health:23	 sleep: 9
+food:17	 libido: 19
+pregnancy:0	 income: 6
+possession:11	 greediness: 5
+stinginess: 712
+Children nbr : 0 sex : F	Bank account : 3240.0
+job : Miner	 Income : 0	 Experience : 1.3000001
+Production at :6	 on :5
+Possesses : food :0	 house :0	 land :287 m²
+ stone: 0	 wood : 0
+ Ownership : €22742.5 
+
+[INFO] -Jun 06,2022 19:25- 1089	 People 33 died
+State :
+Health : -6	 Hungryness : -60
+ sleepiness : 89	 libido : 13
+Pregnant : false
+ Aging : 2
+ID : 33	People characteristics -
+ health:21	 sleep: 14
+food:24	 libido: 6
+pregnancy:0	 income: 0
+possession:9	 greediness: 7
+stinginess: 509
+Children nbr : 0 sex : M	Bank account : 5531.0
+job : Farmer	 Income : 4772	 Experience : 1.1
+Production at :6	 on :20
+Possesses : food :171	 house :0	 land :163 m²
+ stone: 0	 wood : 0
+ Ownership : €15945.343 
+
+[33m[WARN] -Jun 06,2022 19:25- ---------------------End of Simulation------------------[0m
